@@ -4,6 +4,9 @@ import vec.vec2
 import akka._
 import akka.actor._
 
+// Request for the net force exerted by this object with optional direction
+case class NetForce(dir : Double = 0.0)
+
 // Request for the gravitational force between the pair (obj, this)
 case class Grav(obj : PhysicalObject)
 

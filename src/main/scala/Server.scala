@@ -11,8 +11,8 @@ import akka._
 import akka.actor._
 
 object Server {
-	val step : Double = 1000.0
-	val port : Int = 8082
+	val step : Double = 0.05
+	val port : Int = 30000
 	val serverSock : ServerSocket = new ServerSocket(port);
 	
 	var U : Universe = _;
@@ -56,25 +56,22 @@ object Server {
 	def main(args: Array[String]) {
 		val listener = new Thread(new ServerListener(port))
 		listener.start()
-		
-		/*U = new Universe(List(new Planet(1989000000000000000000000000000.0, new vec2(0, 0), new vec2(0, 0), "Sun"),
-															new Planet(328500000000000000000000.0, new vec2(57910000000.0, 0), new vec2(0, 0), "Mercury"),
-															new Planet(4867000000000000000000000.0, new vec2(108200000000.0, 0), new vec2(0, 0), "Venus"),
-															new Planet(5972200000000000000000000.0, new vec2(149600000000.0, 0), new vec2(0, 0), "Earth"),
-															new Planet(639000000000000000000000.0, new vec2(227900000000.0, 0), new vec2(0, 0), "Mars")))*/
 
 		val system = ActorSystem("universe")
-		val hab = system.actorOf(Props(new Ship("Hab", 10000.0)))
 
-		U = new Universe(List(hab))
+		U = new Universe(List(system.actorOf(Props(new Planet(1989000000000000000000000000000.0, new vec2(0, 0), new vec2(0, 0), "Sun")), name="Sun"),
+							  system.actorOf(Props(new Planet(328500000000000000000000.0, new vec2(57910000000.0, 0), new vec2(0, 47400), "Mercury")), name="Mercury")))
+		/*					  system.actorOf(Props(new Planet(4867000000000000000000000.0, new vec2(108200000000.0, 0), new vec2(0, 0), "Venus")), name="Venus"),
+							  system.actorOf(Props(new Planet(5972200000000000000000000.0, new vec2(149600000000.0, 0), new vec2(0, 0), "Earth")), name="Earth"),
+							  system.actorOf(Props(new Planet(639000000000000000000000.0, new vec2(227900000000.0, 0), new vec2(0, 0), "Mars")), name="Mars"),
+							  system.actorOf(Props(new Ship(10000.0, new vec2(149600040000.0,0), new vec2(1,0), "Hab")), name="Hab")))*/
 		
 		val t = new java.util.Timer()
-		t.schedule(new UniverseHandler, step.toLong, step.toLong)
+		t.schedule(new UniverseHandler, (1000 * step).toLong, (1000 * step).toLong)
 		
 		scala.io.StdIn.readLine()
 		exitFlag = true
 	
-		system.shutdown		
 		t.cancel()
 		listener.join()
 	}

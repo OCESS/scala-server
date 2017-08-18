@@ -10,7 +10,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Future
 import scala.util.{Success, Failure}
 
-trait PhysicalObject extends SpatialObject with Actor {
+trait PhysicalObject extends SpatialObject {
 	import context.dispatcher
 	var mass : Double = 0.0
 
@@ -22,17 +22,7 @@ trait PhysicalObject extends SpatialObject with Actor {
 	}
 
 	def NetGrav(obj : List[ActorRef]) {
-		implicit val timeout = Timeout(5 millis)
-		val f = Future.sequence(obj.map(x => (x ? Grav(this))))
-		f.onComplete {
-			case Success(res) => {
-				res.foldRight(new vec2(0,0))((a, b) => b + (a match {
-					case v : vec2 => v
-					case _ => println("Something went horribly wrong"); new vec2(0,0)}))
-				
-			}
-			case Failure(t) => println("An error has occured: " + t.getMessage); new vec2(0, 0)
-		}
+		
 	}
 
 	def tick(obj : List[ActorRef], time : Double) {

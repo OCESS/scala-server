@@ -1,4 +1,4 @@
 package universe.component.engine
 
-class BasicEngine extends universe.component.Engine(100) {
+class BasicEngine(owner : universe.Ship) extends universe.component.Engine(owner, 100) {
 }

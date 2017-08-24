@@ -11,20 +11,24 @@ import scala.util.{Success, Failure}
 
 abstract class Body(val name : String = "") extends PhysicalObject with Actor {
 	import context.dispatcher
+	implicit val timeout = Timeout(500 millis)
 
 	// Returns a list of all forces acting between this object and children and o
 	def getForces(o : PhysicalObject) : List[vec2];
 
 	// Ticks this object 'step' units of time to the future
 	def tick(U : Universe, step : Double) {
+		// Update position
+		pos += vel * step
+
+		// Apply external forces to the universe
 		applyPhysics(U, step)
 	}
 
 	// Applies physics between this object and everything in the universe
-	def applyPhysics(U : Universe, step : Double) {
-		implicit val timeout = Timeout(500 millis)
+	def applyPhysics(U : Universe, step : Double) {	
 		val ctx = this
-		pos += vel * step
+
 		U.actor.map(a => {
 			val f = a ? GetForces(ctx)
 			f.onComplete {
@@ -46,6 +50,6 @@ abstract class Body(val name : String = "") extends PhysicalObject with Actor {
 		case GetForces(o) => sender() ! getForces(o)
 		case TickMessage(u, step) => tick(u, step)
 		case GetLoc() => sender() ! LocInfo(pos, vel, name)
-		case PrintLoc() => println(f"${name}: ${pos.x}%.0f ${pos.y}%.0f")
+		case PrintLoc() => println(f"${pos.x}%.2f,${pos.y}%.2f")
 	}
 }

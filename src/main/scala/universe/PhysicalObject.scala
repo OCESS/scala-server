@@ -17,6 +17,6 @@ trait PhysicalObject extends SpatialObject {
 		if ((this dist b) <= scala.math.pow(10, -6))
 			return new vec2(0.0, 0.0)             
 		else
-			return pos.unit(b.pos) * 0.00000000006673 * b.mass * mass / scala.math.pow((this dist b), 2.0)
+			return pos.unit(b.pos) * -0.00000000006673 * b.mass * mass / scala.math.pow((this dist b), 2.0)
 	}
 }
